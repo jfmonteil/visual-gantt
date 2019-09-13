@@ -1,0 +1,65 @@
+{
+  "name": "@pentaho/visual-gantt",
+  "version": "1.0.0",
+  "description": "Gannt Graph for Pentaho using Viz API 3.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jfmonteil/visual-gantt.git"
+  },
+  "keywords": [
+    "gantt",
+    "pentaho",
+    "analyzer",
+    "d3js"
+  ],
+  "author": "Jean-François Monteil",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jfmonteil/visual-gantt/issues"
+  },
+  "paths": {
+    "pentaho/visual/samples/ganttD3": "/"
+  },
+  "homepage": "https://github.com/jfmonteil/visual-gantt#readme",
+  "config": {
+    "pentaho/modules": {
+      "pentaho/visual/samples/ganttD3/Model": {
+        "base": "pentaho/visual/Model",
+        "annotations": {
+          "pentaho/visual/DefaultView": {
+            "module": "./View"
+          },
+		  "pentaho/theme/Theme": {
+            "main": "css!./css/Model"
+          }
+        }
+      },
+	  "pentaho/visual/samples/ganttD3/View": {
+        "base": null,
+        "annotations": {
+          "pentaho/theme/Theme": {
+            "main": "css!./css/View"
+          },
+		  "pentaho/theme/LoadTheme": {}
+
+        }
+      }, 
+     "pentaho/visual/samples/ganttD3/config": {
+        "type": "pentaho/config/spec/IRuleSet"
+      }
+	}
+  },
+  "devDependencies": {
+    "@pentaho/visual-sandbox": "^3.0.0"
+  },
+  "dependencies": {
+    "d3": "^5.9.7"
+  },
+  "bundleDependencies": [
+    "d3"
+  ]
+}

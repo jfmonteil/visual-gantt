@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+  <style>
+    #viz_div {
+      border: solid 1px #005da6;
+      width:  95vw;
+      height: 80vh;
+    }
+  </style>
+
+  <!-- Load the Visualization API development context. -->
+  <script type="text/javascript" src="node_modules/@pentaho/visual-sandbox/webcontext.js"></script>
+
+  <script type="text/javascript">
+    require([
+      "pentaho/visual/samples/sandbox/Sandbox",
+      "pentaho/data/Table",
+      "json!./sandbox-data.json"
+    ], function(Sandbox, Table, datasets) {
+
+      // Create the sandbox.
+      var sandbox = new Sandbox({
+        id: "pentaho/visual/samples/ganttD3/Model", //A retrouver dans le package.json
+        spec: {
+          "data": new Table(datasets.ganttdata), //Mapping des champs présents dans le sandbox-data.
+          "Categorie": {fields: ["Categorie"]},
+		  "Date_debut": {fields: ["Date_debut"]},
+		  "Statut": {fields: ["Statut"]},
+          "Duree": {fields: ["Duree"]}
+        },
+        container: "viz_div",
+        messages: "msg_div"
+      });
+
+      // Render it.
+      sandbox.renderAsync();
+    });
+  </script>
+</head>
+<body>
+<div id="viz_div"></div>
+<div id="msg_div"></div>
+</body>
+</html>
