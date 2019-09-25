@@ -12,7 +12,7 @@ define(function() {
         },
         apply: {
           props: {
-            barSize: {defaultValue: 50}
+            tickFormat:{defaultValue: "%Y-%m-%d"}
           }
         }
       },

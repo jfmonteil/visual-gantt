@@ -1,23 +1,23 @@
 /* -- Analyzer -- */
 
 /* Canvas placeholder image */
-._pentaho-visual-gantt-visual-gantt-D3-Model.component-icon-landscape {
+._pentaho-visual-gantt-pentaho-visual-samples-gantt-D3-Model.component-icon-landscape {
   background-image: url("./images/analyzer-gantt-d3-placeholder.png");
 }
 
 /* -- PDI -- */
 
 /* Viz Type Selector - Selected Viz Button */
-._pentaho-visual-gantt-pentaho-visual-gantt-Model.visualization-switcher-button-icon {
+._pentaho-visual-gantt-pentaho-visual-samples-gantt-D3-Model.visualization-switcher-button-icon {
   background-image: url("./images/pdi-gantt-d3-button.svg");
 }
 
 /* Viz Type Selector - Drop-down icons */
-.visualization-selector ._pentaho-visual-gantt-pentaho-visual-gantt-Model.component-icon-sprite {
+.visualization-selector ._pentaho-visual-gantt-pentaho-visual-samples-gantt-D3-Model.component-icon-sprite {
   background-image: url("./images/pdi-bar-d3-gantt.svg");
 }
 
 /* Canvas placeholder image */
-._pentaho-visual-gantt-pentaho-visual-gantt-Model .canvas.message .icon {
+._pentaho-visual-gantt-pentaho-visual-samples-gantt-D3-Model .canvas.message .icon {
   background-image: url("images/pdi-gantt-d3-placeholder.svg");
 }

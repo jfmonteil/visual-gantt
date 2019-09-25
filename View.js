@@ -56,12 +56,12 @@ define([
 
 			var tickFormat = "%d %b";
 
-			var keyFunction = function(d) {
-			return d.Date_debut + d.taskName + d.endDate;
+			var keyFunction = function(scene) {
+			return new Date(new Date(scene.vars.Date_debut.toString())) + scene.vars.Categorie.toString() + (new Date(scene.vars.Date_debut.toString())+scene.vars.Duree.value.toString());
 			};
 
-			var rectTransform = function(d) {
-			return "translate(" + x(d.Date_debut) + "," + y(d.taskName) + ")";
+			var rectTransform = function(scene) {
+			return "translate(" + x(new Date(scene.vars.Date_debut.toString())) + "," + y(scene.vars.Categorie.toString()) + ")";
 			};
 
 			var x,y,xAxis,yAxis;
@@ -70,24 +70,39 @@ define([
 			
 			var initTimeDomain = function() {
 			 if (timeDomainMode === FIT_TIME_DOMAIN_MODE) {
-				if (tasks === undefined || tasks.length < 1) {
+				if (scenes === undefined || scenes.length < 1) {
 				timeDomainStart = d3.timeDay.offset(new Date(), -3);
 				timeDomainEnd = d3.timeDay.offset(new Date(), +3);
 				return;
 				}
-				tasks.sort(function(a, b) {
-				return a.endDate - b.endDate;
+				scenes.sort(function(a,b) {
+					var a_Date_debut= new Date(a.vars.Date_debut.toString());
+					var a_endDate= new Date(a_Date_debut);
+					var a_measure=a.vars.Duree.value;
+					a_endDate.setDate(a_endDate.getDate() + a_measure);		
+					
+				    var b_Date_debut= new Date(b.vars.Date_debut.toString());
+					var b_endDate= new Date(b_Date_debut);
+					var b_measure=b.vars.Duree.value;
+					b_endDate.setDate(b_endDate.getDate() + b_measure);			
+										
+					return a_endDate-b_endDate;
 				});
-				timeDomainEnd = tasks[tasks.length - 1].endDate;
-				tasks.sort(function(a, b) {
-				return a.Date_debut - b.Date_debut;
+				
+				
+				var date_debut=new Date(scenes[scenes.length - 1].vars.Date_debut.toString())
+				var measure=scenes[scenes.length - 1].vars.Duree.value
+				timeDomainEnd = d3.timeDay.offset(date_debut, measure);
+				
+				scenes.sort(function(a, b) {
+				return (new Date(a.vars.Date_debut.toString()) - new Date(b.vars.Date_debut.toString()));
 				});
-				timeDomainStart = tasks[0].Date_debut;
+				timeDomainStart = new Date(scenes[0].vars.Date_debut.toString());
 			}
 			};
 			
 			function initAxis() {
-				var tickFormat = "%Y-%m-%d";
+				var tickFormat = model.tickFormat;
 				x = d3.scaleTime().domain([ timeDomainStart, timeDomainEnd ]).range([ 0, width ]).clamp(true);
 
 				y = d3.scaleBand().domain(taskTypes).rangeRound([ 0, height - margin.top - margin.bottom ], .1);
@@ -99,11 +114,14 @@ define([
 			  };
 
 			
-			 function gantt(tasks) {
+			 function gantt(scenes) {
 
 				initTimeDomain();
 				initAxis();
-				
+				d3.select(".tooltip").remove();
+				var div = d3.select("body").append("div")	
+                  .attr("class", "tooltip")				
+                  .style("opacity", 0);
 
 				var svg = d3.select(container.node())
 				  .append("svg")
@@ -117,30 +135,41 @@ define([
 				  .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
 				svg.selectAll(".chart")
-				  .data(tasks, keyFunction).enter()
+				  .data(scenes, keyFunction).enter()
 				  .append("rect")
 				  .attr("rx", 5)
 				  .attr("ry", 5)
-				  .attr("class", function(d){ 
-					if(taskStatus[d.status] == null){ return "task bar";}
-					return taskStatus[d.status];
+				  .attr("class", function(scene){ 
+				  if(taskStatus[scene.vars.Statut] == null){ return "bar task";}
+					return taskStatus[scene.vars.Statut.toString()]+" task";
 				  }) 
 				  .attr("y", 0)
 				  .attr("transform", rectTransform)
-				  .attr("height", function(d) { return y.bandwidth()-6; })
-				  .attr("width", function(d) { 
-					return (x(d.endDate) - x(d.Date_debut)); 
-				  });
-
+				  .attr("height", function(scene) { return y.bandwidth()-6; })
+				  .attr("width", function(scene) { 
+					 var Date_debut= new Date(scene.vars.Date_debut.toString());
+			         var endDate= new Date(Date_debut);
+			         var measure=scene.vars.Duree.value;
+			         endDate.setDate(endDate.getDate() + measure);		
+					 return (x(endDate)-x(Date_debut));
+				  })
+				  // Popup on mouseover
+				  .on("mouseover", function(scene,event) {		 
+				    div.transition()		
+					.duration(200)		
+					.style("opacity", .9);		
+				    div.html(scene.vars.Date_debut.toString() + " "  + scene.vars.Categorie.toString() + " "  +scene.vars.Statut.toString()+" "+scene.vars.Duree.value+" day(s)")
+					.style("left", (d3.event.pageX) + "px")		
+					.style("top", (d3.event.pageY)+ "px");
+				    });
+                
 				  svg.append("g")
 					.attr("class", "x axis")
 					.attr("transform", "translate(0, " + (height - margin.top - margin.bottom) + ")")
 					.transition()
 					.call(xAxis);
-
-				  svg.append("g").attr("class", "y axis").transition().call(yAxis);
-                  
-				 				  
+				  svg.append("g").attr("class", "y axis").transition().call(yAxis);	 				  
+				  				  
 				  return gantt;
 
 			  };
@@ -211,9 +240,9 @@ define([
 			};
 		
 		/* Fin Drawing the Gantt */
-		var tasks=[];
+		/*var tasks=[];*/
 		var taskNames=[];
-		
+	    var statuses = [];
 		/* Prepa des données pour le gantt*/
 		/* Il faut ici convertir en date la string date_debut et calculer */
 		/* La date de fin = date_debut+nbjour */
@@ -223,61 +252,81 @@ define([
 	    for(var i = 0, R = scenes.length; i < R; i++) {
           
 			
-			//Caluclating end date.
-			var Date_debut= new Date(scenes[i].vars.Date_debut.toString());
-			var endDate= new Date(Date_debut);
-			var measure=scenes[i].vars.Duree.value;
-			endDate.setDate(endDate.getDate() + measure);			
-
-			tasks.push({
-				Date_debut:Date_debut,
-				endDate:  endDate,
-				taskName: scenes[i].vars.Categorie.toString(),
-				status:   scenes[i].vars.Statut.toString()
-				});
-			
 			taskNames.push(scenes[i].vars.Categorie.toString());
+			
+			//Attribution d'un stlye à chaque status de tâche"
+			var statuses_index=-1;
+			  if(i==0)
+			  { 
+				 statuses.push(scenes[i].vars.Statut.toString());
+				
+			  }
+			  else
+			  {
+				  
+				  var found=false;
+				  for(var t=0;t<statuses.length&&found==false;t++)
+				  {
+					  if(scenes[i].vars.Statut.toString()==statuses[t])
+					  {
+						found=true;					  
+					  }
+				  }
+				  if(!found)
+				  {				 
+					 statuses.push(scenes[i].vars.Statut.toString());				 
+				  }		 
 				
 			}
+		}
+		/*	var taskStatus = {
+					"SUCCEEDED" : "bar-succeeded task",
+					"FAILED" : "bar-failed task",
+					"RUNNING" : "bar-running task",
+					"KILLED" : "bar-killed task"
+					};*/
+		var taskStatus = {};
+		for(var j=0;j<statuses.length;j++)
+		{
+			var columnName=statuses[j];
+			taskStatus[columnName]="bar-"+j.toString();
+			
+		}
+		
+		
 		/* Fin prepa donnée */
+		
 		
 		var container = d3.select(this.domContainer);
 
 		container.selectAll("*").remove();
 		
-		var taskStatus = {
-			"SUCCEEDED" : "task bar-succeeded",
-			"FAILED" : "task bar-failed",
-			"RUNNING" : "task bar-running",
-			"KILLED" : "task bar-killed"
-		};
-		
-		tasks.sort(function(a, b) {
-			return a.endDate - b.endDate;
+	
+		scenes.sort(function(scene) {
+			return scene.vars.Duree.value;
 		});
 		
-		var maxDate = tasks[tasks.length - 1].endDate; //On prend la donnee 
-		tasks.sort(function(a, b) {
-			return a.Date_debut - b.Date_debut;
+		var maxDate = new Date(scenes[scenes.length - 1].vars.Date_debut.toString()); //On prend la donnee 
+		scenes.sort(function(a, b) {
+			return (new Date(a.vars.Date_debut.toString()) - new Date(b.vars.Date_debut.toString()));
 		});
 		
-		var minDate = tasks[0].Date_debut;
+		var minDate = new Date(scenes[0].vars.Date_debut.toString());
 
 		var format = "%H:%M";
 
 		var gantt = d3.gantt(container).taskTypes(taskNames).taskStatus(taskStatus).tickFormat(format);
-		gantt(tasks);
+		gantt(scenes);
 		
         var cc = d3ClickController();
-
-                  
+             
 	    var bar = d3.selectAll(".task");
 	    bar.call(cc);
 
 	    cc.on("dblclick", function(event, scene) {
 		// A filter that selects the data that the bar visually represents
 		var filter = scene.createFilter();
-
+        d3.select(".tooltip").remove();
 		// Dispatch an "execute" action through the model
 		model.execute({dataFilter: filter});
 	    });
@@ -285,20 +334,26 @@ define([
 	    // Part 4 - Emit select action
 	    cc.on("click", function(event, scene) {
 		// A filter that selects the data that the bar visually represents
-		var filter = scene.createFilter();
+			var filter = scene.createFilter();
+			d3.select(".tooltip").remove();
+			
+			// Dispatch a "select" action through the model
+			
+			model.select({
+			  dataFilter: filter,
+			  selectionMode: event.ctrlKey || event.metaKey ? "toggle" : "replace"
+			});
+			bar.classed("selected", function(scene) {
+				var selectionFilter = model.selectionFilter;
+			   var result=!!selectionFilter && dataTable.filterMatchesRow(selectionFilter, scene.index);
+			   return result;
+			});
+		// Part 5 - Update each bars' selection state
+	 
+	     });
+	 
 
-		// Dispatch a "select" action through the model
-		model.select({
-		  //dataFilter: filter,
-		  selectionMode: event.ctrlKey || event.metaKey ? "toggle" : "replace"
-		});
-	  });
 
-	  // Part 5 - Update each bars' selection state
-	  bar.classed("selected", function(scene) {
-		var selectionFilter = model.selectionFilter;
-		return !!selectionFilter && dataTable.filterMatchesRow(selectionFilter, scene.index);
-	  });
 
 	},
 	

@@ -39,22 +39,15 @@
   fill: #005f7d;
 }
 
-._pentaho-visual-gantt-pentaho-visual-gantt-View .task.selected {
+._pentaho-visual-gantt-pentaho-visual-samples-gantt-D3-View .task.selected {
   stroke-opacity: 0.4;
   fill-opacity: 0.6;
 }
 
-._pentaho-visual-gantt-pentaho-visual-gantt-View .task.selected:hover {
+._pentaho-visual-gantt-pentaho-visual-samples-gantt-D3-View .task.selected:hover {
   stroke-opacity: 0.8;
 }
 
-.pentaho-visual-gantt .task.selected {
-  fill: #97372d;
-}
-
-.pentaho-visual-gantt .task.selected:hover {
-  fill: #970a05;
-}
 
 html,body,#wrapper {
 	width: 100%;
