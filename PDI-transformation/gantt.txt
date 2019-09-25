@@ -1,0 +1,8 @@
+Task,Start,status,Duration
+"Audit","2017-05-01","SUCCEEDED",30
+"Spec","2017-06-01","SUCCEEDED",45
+"Dev","2017-08-01","SUCCEEDED",15
+"Quality","2017-07-01","FAILED",82
+"Deployment","2017-09-01","RUNNING",15
+"Suport","2017-11-01","SUCCEEDED",38
+"Project Management","2017-01-01","SUCCEEDED", 470
