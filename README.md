@@ -15,6 +15,7 @@ The following measure needs to be defined :
 
  - Number of days : length of the task in days
  
+More details here : https://www.linkedin.com/pulse/ajouter-un-graph-d3js-dans-pentaho-analyzer-avec-la-nouvelle-monteil/
  
 ## Support Statement
  
