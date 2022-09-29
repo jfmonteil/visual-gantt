@@ -57,7 +57,7 @@
     "@pentaho/visual-sandbox": "^3.0.0"
   },
   "dependencies": {
-    "d3": "^5.9.7"
+    "d3": "^7.6.1"
   },
   "bundleDependencies": [
     "d3"
